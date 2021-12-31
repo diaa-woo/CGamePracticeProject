@@ -8,6 +8,10 @@
 
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
+const int refreshRate = 50;  
+/*
+	1초에 몇번 콘솔입력을 받을 것인지 루틴을 정하는 변수
+*/
 
 void setcursortype(CURSOR_TYPE c) {
 	CONSOLE_CURSOR_INFO CurInfo;
@@ -80,13 +84,26 @@ void gotoxy(int x, int y) {
 int main() {
 	setcursortype(NOCURSOR);
 	int x = 0, y = 0;
+	int cnt = 1;
+	/*
+		위 변수는 카운터를 의미함
+
+		1초에 refreshRate 변수만큼 실행한 뒤, 전부 실행시 카운터를 증가시킴
+		그리고 특정 함수를 더 호출 시켜주는 역할
+
+		위를 응용하게되면 여러 작업의 실행 타이밍 또는 신호의 주기 등을 관리할 수 있음
+	*/
 	char ch;
 	gotoxy(x, y);
 	printf("@");
 	while (TRUE) {
-		ch = _getch();
+		ch = '\0';
+		if(_kbhit()) ch = _getch();
 		/*
-			_getch()는 사용자에게 키보드로 하나의 키를 입력받는 함수 중 하나
+			* _kbhit() 함수는 키보드의 키가 눌려 있으면 0이 아닌 값을, 눌려 있지 않으면 0을 반환
+			이를 이용해 키보드의 키가 눌려져 있을 때만 입력을 받을 수 있음
+
+			* _getch()는 사용자에게 키보드로 하나의 키를 입력받는 함수 중 하나
 			차이점은, 다른 입력 함수들은 보통 '표준 입력' 방식으로 표준 입력 버퍼에 저장되는데, 이 함수는 '콘솔 입력'으로 버퍼에 저장되지 않고 해당 입력값을 즉시 반환 뒤 종료 된다.
 			값은 받지만 그 입력값을 콘솔에 출력해주지는 않음
 			즉각적인 반응을 해야할 때 필요함
@@ -107,8 +124,16 @@ int main() {
 		case 'd':
 			if (x < 79) x++;
 			break;
+		}
 		gotoxy(x, y);
 		printf("@");
+
+		gotoxy(0, 0);
+		printf("%d", cnt);  //실행 빈도 출력
+		if (cnt % 50 == 0) printf("\n%d", cnt / refreshRate);  //카운터 출력
+
+		Sleep(1000 / refreshRate);
+		cnt++;
 	}
 	return 0;
 }
