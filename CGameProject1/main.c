@@ -13,6 +13,14 @@ const int refreshRate = 50;
 	1초에 몇번 콘솔입력을 받을 것인지 루틴을 정하는 변수
 */
 
+typedef struct {
+	int health;
+	int x;
+	int y;
+
+	boolean ifAlive;
+}Player;
+
 void setcursortype(CURSOR_TYPE c) {
 	CONSOLE_CURSOR_INFO CurInfo;
 	/*
@@ -94,9 +102,18 @@ int main() {
 		위를 응용하게되면 여러 작업의 실행 타이밍 또는 신호의 주기 등을 관리할 수 있음
 	*/
 	char ch;
+
+	Player myPlayer = { 100, 0, 0, TRUE };
+	Player enemyPlayer = { 100, 79, 24, TRUE };
+
 	gotoxy(x, y);
 	printf("@");
 	while (TRUE) {
+		gotoxy(myPlayer.x, myPlayer.y);
+		printf(" ");
+		gotoxy(enemyPlayer.x, enemyPlayer.y);
+		printf(" ");
+
 		ch = '\0';
 		if(_kbhit()) ch = _getch();
 		/*
@@ -108,29 +125,31 @@ int main() {
 			값은 받지만 그 입력값을 콘솔에 출력해주지는 않음
 			즉각적인 반응을 해야할 때 필요함
 		*/
-		gotoxy(x, y);
-		printf(" ");
 		switch (ch)
 		{
 		case 'w':
-			if (y > 0) y--;
+			if (myPlayer.y > 0) myPlayer.y--;
 			break;
 		case 's':
-			if (y < 24) y++;
+			if (myPlayer.y < 24) myPlayer.y++;
 			break;
 		case 'a':
-			if (x > 0) x--;
+			if (myPlayer.x > 0) myPlayer.x--;
 			break;
 		case 'd':
-			if (x < 79) x++;
+			if (myPlayer.x < 79) myPlayer.x++;
 			break;
 		}
-		gotoxy(x, y);
+		gotoxy(myPlayer.x, myPlayer.y);
 		printf("@");
+		gotoxy(enemyPlayer.x, enemyPlayer.y);
+		printf("$");
 
-		gotoxy(0, 0);
-		printf("%d", cnt);  //실행 빈도 출력
-		if (cnt % 50 == 0) printf("\n%d", cnt / refreshRate);  //카운터 출력
+		/*
+			gotoxy(0, 0);
+			printf("%d", cnt);  //실행 빈도 출력
+			if (cnt % 50 == 0) printf("\n%d", cnt / refreshRate);  //카운터 출력
+		*/
 
 		Sleep(1000 / refreshRate);
 		cnt++;
