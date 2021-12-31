@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Windows.h>
+#include <conio.h>  
+/*
+	conio.h는 콘솔 입력 함수를 호출시켜 준다.
+*/
+
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
 
@@ -74,12 +79,37 @@ void gotoxy(int x, int y) {
 
 int main() {
 	setcursortype(NOCURSOR);
-	gotoxy(0, 0); 
-	printf("(0, 0) 좌표에 출력했습니다."); 
-	gotoxy(40, 12); 
-	printf("(40, 12) 좌표에 출력했습니다."); 
-	gotoxy(0, 24); 
-	printf("가장 밑줄에 출력했습니다.");
+	int x = 0, y = 0;
+	char ch;
+	gotoxy(x, y);
+	printf("@");
+	while (TRUE) {
+		ch = _getch();
+		/*
+			_getch()는 사용자에게 키보드로 하나의 키를 입력받는 함수 중 하나
+			차이점은, 다른 입력 함수들은 보통 '표준 입력' 방식으로 표준 입력 버퍼에 저장되는데, 이 함수는 '콘솔 입력'으로 버퍼에 저장되지 않고 해당 입력값을 즉시 반환 뒤 종료 된다.
+			값은 받지만 그 입력값을 콘솔에 출력해주지는 않음
+			즉각적인 반응을 해야할 때 필요함
+		*/
+		gotoxy(x, y);
+		printf(" ");
+		switch (ch)
+		{
+		case 'w':
+			if (y > 0) y--;
+			break;
+		case 's':
+			if (y < 24) y++;
+			break;
+		case 'a':
+			if (x > 0) x--;
+			break;
+		case 'd':
+			if (x < 79) x++;
+			break;
+		gotoxy(x, y);
+		printf("@");
+	}
 	return 0;
 }
 
@@ -95,4 +125,6 @@ int main() {
 	https://m.blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=tipsware&logNo=221065382244&proxyReferer=
 	https://lunarcat-repo.tistory.com/6
 	https://docs.microsoft.com/ko-kr/windows/console/
+	https://dongwook8467.tistory.com/10
+	https://blog.naver.com/PostView.nhn?blogId=tipsware&logNo=221242072724
 */
