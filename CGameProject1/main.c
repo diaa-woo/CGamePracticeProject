@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <Windows.h>
-#include <conio.h>  
-/*
-	conio.h는 콘솔 입력 함수를 호출시켜 준다.
-*/
-
+#include "main.h"
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
 const int refreshRate = 50;  
@@ -13,13 +6,10 @@ const int refreshRate = 50;
 	1초에 몇번 콘솔입력을 받을 것인지 루틴을 정하는 변수
 */
 
-typedef struct {
-	int health;
-	int x;
-	int y;
-
-	boolean ifAlive;
-}Player;
+void End() {
+	system("cls");
+	gotoxy(30, 10);
+}
 
 void setcursortype(CURSOR_TYPE c) {
 	CONSOLE_CURSOR_INFO CurInfo;
@@ -139,6 +129,9 @@ int main() {
 		case 'd':
 			if (myPlayer.x < 79) myPlayer.x++;
 			break;
+		case ESC:
+			End();
+			return 0;
 		}
 		gotoxy(myPlayer.x, myPlayer.y);
 		printf("@");
@@ -166,6 +159,7 @@ int main() {
 
 /*
 	인용:
+	https://cosmosscoding.tistory.com/12
 	https://m.blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=tipsware&logNo=221065382244&proxyReferer=
 	https://lunarcat-repo.tistory.com/6
 	https://docs.microsoft.com/ko-kr/windows/console/
