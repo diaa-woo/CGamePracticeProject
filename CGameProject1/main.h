@@ -22,6 +22,8 @@ typedef struct {
 
 const char* arEnemy[] = { ";:^:; ", " zZWZz ", " o0@0o ", " <-=-> " };
 
+int score;
+
 struct tag_Ball {
 	boolean ifExist;
 	int x, y;

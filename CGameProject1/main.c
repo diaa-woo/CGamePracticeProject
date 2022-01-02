@@ -6,11 +6,6 @@ const int refreshRate = 50;
 	1초에 몇번 콘솔입력을 받을 것인지 루틴을 정하는 변수
 */
 
-void End() {
-	system("cls");
-	gotoxy(30, 10);
-}
-
 void setcursortype(CURSOR_TYPE c) {
 	CONSOLE_CURSOR_INFO CurInfo;
 	/*
@@ -52,6 +47,16 @@ void setcursortype(CURSOR_TYPE c) {
 		이 함수에서 핸들과 콘솔 커서에 구조체의 주소값을 받음
 
 	*/
+}
+
+void End() {
+	system("cls");
+	gotoxy(30, 10);
+	printf("===============================GAME OVER===============================\n\n");
+	gotoxy(58, 15);
+	printf("점수=%d\n\n\n\n\n\n\n\n\n\n\n", Score);
+	setcursortype(NORMALCURSOR);
+	getchar();
 }
 
 void gotoxy(int x, int y) {
