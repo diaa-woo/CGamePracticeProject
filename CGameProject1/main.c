@@ -82,27 +82,14 @@ int main() {
 	int x = 0, y = 0;
 	int fx = 0, fy = 0;
 	int bx = 0, by = 0;
-	boolean checkShoot = 0;
-	int cnt = 1;
-	/*
-		위 변수는 카운터를 의미함
-
-		1초에 refreshRate 변수만큼 실행한 뒤, 전부 실행시 카운터를 증가시킴
-		그리고 특정 함수를 더 호출 시켜주는 역할
-
-		위를 응용하게되면 여러 작업의 실행 타이밍 또는 신호의 주기 등을 관리할 수 있음
-	*/
+	int i = 0, j = 0;
+	boolean checkShoot = 0, bFound;
 	char ch;
-
-	Player myPlayer = { 100, 0, 0, TRUE };
-	Player enemyPlayer = { 100, 79, 24, TRUE };
 
 	gotoxy(x, y);
 	printf("@");
 	while (TRUE) {
-		gotoxy(myPlayer.x, myPlayer.y);
-		printf(" ");
-		gotoxy(enemyPlayer.x, enemyPlayer.y);
+		gotoxy(Player.x, Player.y);
 		printf(" ");
 
 		ch = '\0';
@@ -119,26 +106,26 @@ int main() {
 		switch (ch)  //키 입력 처리
 		{
 		case 72:
-			if (myPlayer.y > 0) {
-				myPlayer.y--;
+			if (Player.y > 0) {
+				Player.y--;
 				fy--;
 			}
 			break;
 		case 80:
-			if (myPlayer.y < 24) {
-				myPlayer.y++;
+			if (Player.y < 24) {
+				Player.y++;
 				fy++;
 			}
 			break;
 		case 75: 
-			if (myPlayer.x > 0) {
-				myPlayer.x--;
+			if (Player.x > 0) {
+				Player.x--;
 				fx--;
 			}
 			break;
 		case 77:
-			if (myPlayer.x < 79) {
-				myPlayer.x++;
+			if (Player.x < 79) {
+				Player.x++;
 				fx++;
 			}
 			break;
@@ -154,6 +141,40 @@ int main() {
 			return 0;
 		}
 
+		//적군 생성
+		if (rand() % 50 == 0) {
+			for (i = 0; i < MAXENEMY && Enemy[i].ifAlive == 1; i++) { ; }
+			if (i != MAXENEMY) {
+				if ((rand() % 2) + 1 == 1) {
+					Enemy[i].x = 5;
+					Enemy[i].Delta = 1;
+				}
+
+				else {
+					Enemy[i].x = 75;
+					Enemy[i].Delta = -1;
+				}
+
+				for (;;) {
+					Enemy[i].y = rand() % 10 + 1;
+					for (bFound = 0, j = 0; j < MAXENEMY; j++) {
+						if (Enemy[j].ifAlive == 1 && Enemy[j].y == Enemy[i].y) {
+							bFound = 1;
+							break;
+						}
+					}
+					if (bFound == 0) {
+						break;
+					}
+				} 
+				Enemy[i].nFrame = Enemy[i].nStay = rand() % 6 + 1;
+				Enemy[i].Type = rand() % (sizeof(arEnemy) / sizeof(arEnemy[0]));
+				Enemy[i].ifAlive = 1;
+			}
+		}
+
+
+		//총알 발사
 		if (checkShoot == 1) {
 			gotoxy(bx, by);
 			putch(' ');
@@ -170,19 +191,36 @@ int main() {
 				putch('i');
 			}
 		}
-		gotoxy(myPlayer.x, myPlayer.y);
+		gotoxy(Player.x, Player.y);
 		printf("@");
-		gotoxy(enemyPlayer.x, enemyPlayer.y);
-		printf("$");
 
-		/*
-			gotoxy(0, 0);
-			printf("%d", cnt);  //실행 빈도 출력
-			if (cnt % 50 == 0) printf("\n%d", cnt / refreshRate);  //카운터 출력
-		*/
+		//적군 이동 및 출력
+		for (i = 0; i < MAXENEMY; i++) {
+			if (Enemy[i].ifAlive == 0) continue;
+			if (--Enemy[i].nStay == 0) {
+				Enemy[i].nStay = Enemy[i].nFrame;
+				Enemy[i].ifAlive = 0;
+				gotoxy(Enemy[i].x - 3, Enemy[i].y);
+				puts("       ");
+			}
+			else {
+				Enemy[i].x += Enemy[i].Delta;
+				gotoxy(Enemy[i].x - 3, Enemy[i].y);
+				puts(arEnemy[Enemy[i].Type]);
+				//총알 발사
+				if (rand() % 20 == 0) {
+					for (j = 0; j < MAXBALL && Ball[j].ifExist == 1; j++) {;}
+					if (j != MAXBALL) {
+						Ball[j].x = Enemy[i].x + 2;
+						Ball[j].y = Enemy[i].y + 1;
+						Ball[j].nFrame = Ball[j].nStay = Enemy[i].nFrame * 6;
+						Ball[j].ifExist = 1;
+					}
+				}
+			}
+		}
 
 		Sleep(1000 / refreshRate);
-		cnt++;
 	}
 	return 0;
 }

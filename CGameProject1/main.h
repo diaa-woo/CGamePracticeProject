@@ -14,16 +14,24 @@
 	C언어에는 POSIX를 따르는 헤더 파일과 함수들이 일부 존재하는데, 이 개수가 상당하다. 다만 이 POSIX를 따르지 않다고 해서 다른 헤더파일들은 POSIX 규격을 따르는 운영체제에서 따르지 못한다는 소리는 아니다.
 */
 
+#define MAXENEMY 10
 #define MAXBALL 20
 #define ESC 27
 
-typedef struct {
+struct tag_enemy{
 	int Type;
 	int health;
 	int x;
 	int y;
 	int Delta;
+	int nFrame;
 	int nStay;
+	boolean ifAlive;
+}Enemy[MAXENEMY];
+
+struct tag_player{
+	int x;
+	int y;
 	boolean ifAlive;
 }Player;
 
