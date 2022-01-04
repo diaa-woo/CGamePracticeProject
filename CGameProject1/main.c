@@ -179,7 +179,7 @@ int main() {
 			gotoxy(bx, by);
 			putch(' ');
 			/*
-				한 글자만 출력하여 준다. 
+				한 글자만 출력하여 준다.
 				얘를 뭣하러 쓰나 싶겠지만 우선 버퍼를 거치지 않고 바로 출력하기에 출력 속도가 상당히 빠르고, 많은 기능을 포함하고 있는 printf에 비해 더 빠른 속도를 나타내어 준다
 			*/
 			if (by == 0) {
@@ -191,8 +191,26 @@ int main() {
 				putch('i');
 			}
 		}
-		gotoxy(Player.x, Player.y);
-		printf("@");
+
+		//적군과 아군 총알의 충돌 판정
+		for (i = 0; i < MAXENEMY; i++) {
+			if (!Enemy[i].ifAlive) continue;
+			if (Enemy[i].y == by && abs(Enemy[i].x - bx) <= 2) {
+				/*
+					abs() 함수
+					헤더파일: <stdlib.h>
+					함수원형: int abs(int num)
+					함수설명: 인자로 들어온 int 타입의 num의 절대값을 반환하는 함수
+				*/
+				gotoxy(bx, by); putch(' ');
+				bx = -1;
+				Enemy[i].ifAlive = 0;
+				gotoxy(Enemy[i].x - 3, Enemy[i].y);
+				puts("       ");
+				score += 7 - Enemy[i].nFrame;
+				break;
+			}
+		}
 
 		//적군 이동 및 출력
 		for (i = 0; i < MAXENEMY; i++) {
@@ -219,7 +237,6 @@ int main() {
 				}
 			}
 		}
-
 		Sleep(1000 / refreshRate);
 	}
 	return 0;
