@@ -37,7 +37,7 @@ struct tag_player{
 
 const char* arEnemy[] = { ";:^:; ", " zZWZz ", " o0@0o ", " <-=-> " };
 
-typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; 
+typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //Cursor type
 
 int score;
 
