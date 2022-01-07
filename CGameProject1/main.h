@@ -17,7 +17,7 @@
 #define MAXENEMY 10
 #define MAXBALL 20
 #define ESC 27
-
+ 
 struct tag_enemy{
 	int Type;
 	int health;
@@ -29,11 +29,11 @@ struct tag_enemy{
 	boolean ifAlive;
 }Enemy[MAXENEMY];
 
-struct tag_player{
+typedef struct {
 	int x;
 	int y;
 	boolean ifAlive;
-}Player;
+}player;
 
 const char* arEnemy[] = { ";:^:; ", " zZWZz ", " o0@0o ", " <-=-> " };
 

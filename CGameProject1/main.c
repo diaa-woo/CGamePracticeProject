@@ -1,5 +1,7 @@
 #include "main.h"
 
+player Player;
+
 void setcursortype(CURSOR_TYPE c) {
 	CONSOLE_CURSOR_INFO CurInfo;
 	/*
@@ -80,14 +82,12 @@ void End() {
 int main() {
 	setcursortype(NOCURSOR);
 	int x = 0, y = 0;
-	int fx = 0, fy = 0;
+	int fx = 60;
 	int bx = 0, by = 0;
 	int i = 0, j = 0;
 	boolean checkShoot = 0, bFound;
 	char ch;
-
-	gotoxy(x, y);
-	printf("@");
+	Player.x = 63;
 	while (TRUE) {
 		gotoxy(Player.x, Player.y);
 		printf(" ");
@@ -105,35 +105,21 @@ int main() {
 		*/
 		switch (ch)  //키 입력 처리
 		{
-		case 72:
-			if (Player.y > 0) {
-				Player.y--;
-				fy--;
-			}
-			break;
-		case 80:
-			if (Player.y < 24) {
-				Player.y++;
-				fy++;
-			}
-			break;
 		case 75: 
-			if (Player.x > 0) {
+			if (Player.x > 2) {
 				Player.x--;
-				fx--;
 			}
 			break;
 		case 77:
-			if (Player.x < 79) {
+			if (Player.x < 77) {
 				Player.x++;
-				fx++;
 			}
 			break;
 		case ' ':
 			if (checkShoot == 0) {
 				checkShoot = 1;
-				bx = fx;
-				by = fy;
+				bx = Player.x;
+				by = 23;
 			}
 			break;
 		case ESC:
@@ -177,7 +163,7 @@ int main() {
 		//총알 발사
 		if (checkShoot == 1) {
 			gotoxy(bx, by);
-			putch(' ');
+			_putch(' ');
 			/*
 				한 글자만 출력하여 준다.
 				얘를 뭣하러 쓰나 싶겠지만 우선 버퍼를 거치지 않고 바로 출력하기에 출력 속도가 상당히 빠르고, 많은 기능을 포함하고 있는 printf에 비해 더 빠른 속도를 나타내어 준다
@@ -188,7 +174,31 @@ int main() {
 			else {
 				by--;
 				gotoxy(bx, by);
-				putch('i');
+				_putch('i');
+			}
+		}
+
+
+		// 적군 총알 이동
+		for (i = 0; i < MAXBALL; i++)
+		{
+			if (Ball[i].ifExist == FALSE)
+				continue;
+
+			if (--Ball[i].nStay == 0)
+			{
+				Ball[i].nStay = Ball[i].nFrame;
+				gotoxy(Ball[i].x, Ball[i].y); _putch(' ');
+
+				if (Ball[i].y >= 23)
+				{
+					Ball[i].ifExist = FALSE;
+				}
+				else
+				{
+					Ball[i].y++;
+					gotoxy(Ball[i].x, Ball[i].y); _putch('*');
+				}
 			}
 		}
 
@@ -202,7 +212,7 @@ int main() {
 					함수원형: int abs(int num)
 					함수설명: 인자로 들어온 int 타입의 num의 절대값을 반환하는 함수
 				*/
-				gotoxy(bx, by); putch(' ');
+				gotoxy(bx, by); _putch(' ');
 				bx = -1;
 				Enemy[i].ifAlive = 0;
 				gotoxy(Enemy[i].x - 3, Enemy[i].y);
@@ -212,14 +222,30 @@ int main() {
 			}
 		}
 
+		// 적군 총알과 아군의 충돌 판정
+		for (i = 0; i < MAXBALL; i++) {
+			if (Ball[i].ifExist == FALSE) continue;
+			if (Ball[i].y == 23 && abs(Ball[i].x - Player.x) <= 2) {
+				gotoxy(Player.x - 3, 21); puts("   .   ");
+				gotoxy(Player.x - 3, 22); puts(" .  . .");
+				gotoxy(Player.x - 3, 23); puts("..:V:..");
+				Sleep(1000);
+
+				End();
+				return 0;
+			}
+		}
+
 		//적군 이동 및 출력
 		for (i = 0; i < MAXENEMY; i++) {
 			if (Enemy[i].ifAlive == 0) continue;
 			if (--Enemy[i].nStay == 0) {
 				Enemy[i].nStay = Enemy[i].nFrame;
-				Enemy[i].ifAlive = 0;
-				gotoxy(Enemy[i].x - 3, Enemy[i].y);
-				puts("       ");
+				if (Enemy[i].x >= 76 || Enemy[i].x <= 4) {
+					Enemy[i].ifAlive = FALSE;
+					gotoxy(Enemy[i].x - 3, Enemy[i].y);
+					puts("       ");
+				}
 			}
 			else {
 				Enemy[i].x += Enemy[i].Delta;
@@ -229,7 +255,7 @@ int main() {
 				if (rand() % 20 == 0) {
 					for (j = 0; j < MAXBALL && Ball[j].ifExist == 1; j++) {;}
 					if (j != MAXBALL) {
-						Ball[j].x = Enemy[i].x + 2;
+						Ball[j].x = Enemy[i].x + 1;
 						Ball[j].y = Enemy[i].y + 1;
 						Ball[j].nFrame = Ball[j].nStay = Enemy[i].nFrame * 6;
 						Ball[j].ifExist = 1;
@@ -237,6 +263,13 @@ int main() {
 				}
 			}
 		}
+
+		// 파이터 및 점수 출력
+		gotoxy(Player.x - 3, 23);
+		puts(" <<A>> ");
+		gotoxy(0, 24);
+		printf("점수=%d", score);
+
 		Sleep(1000 / refreshRate);
 	}
 	return 0;
